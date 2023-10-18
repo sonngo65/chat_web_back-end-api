@@ -1,6 +1,7 @@
 package com.example.chatweb.payload;
 
-import java.util.UUID;
+
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageInput {
-	private String text;
-	private UUID userSendId;
-	private UUID userReceivedId;
+public class ErrorDetails {
+	private Date timestamp;
+	private String message;
+	private String details;
 }

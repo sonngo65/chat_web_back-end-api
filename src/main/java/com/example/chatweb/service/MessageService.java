@@ -5,9 +5,11 @@ import java.util.UUID;
 
 import com.example.chatweb.entity.Message;
 import com.example.chatweb.entity.User;
-import com.example.chatweb.payload.MessageOutput;
+import com.example.chatweb.payload.MessageDto;
+import com.example.chatweb.payload.MessageRequest;
 
 public interface MessageService {
 	public Message save(Message message);
-	public List<MessageOutput> listMessagesByUser(UUID userId,UUID friendId);;
+	public List<MessageDto> listMessagesByUser(UUID userId,UUID friendId);
+	public MessageDto senMessage(MessageRequest messageRequest);
 }

@@ -29,5 +29,5 @@ public class AppConfiguration {
 	public Path createPath() {
 		return Paths.get("src/main/java/com/example/chatweb/image");
 	}
-
+	
 }	

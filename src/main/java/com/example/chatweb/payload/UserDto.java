@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
+public class UserDto {
 	private UUID userId;
 	private String name;
 	private String icon;
@@ -26,7 +26,7 @@ public class UserResponse {
 	private boolean isOnline;
 	private String lastActive;
 	
-	public static UserResponse convertToUserResponse(User user) {
+	public static UserDto convertToUserResponse(User user) {
 		Date now = new Date();
 		LocalDateTime start = user.getLastActive().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		LocalDateTime end = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -42,6 +42,6 @@ public class UserResponse {
 			lastActive = duration.toSeconds() + "giây";
 		}
 		user.setIcon(ServletUriComponentsBuilder.fromCurrentContextPath().path("/image/").path(user.getIcon()).toUriString());
-		return new UserResponse(user.getUserId(),user.getName(),user.getIcon(),user.getColor(),user.isOnline(),lastActive);
+		return new UserDto(user.getUserId(),user.getName(),user.getIcon(),user.getColor(),user.isOnline(),lastActive);
 	}
 }

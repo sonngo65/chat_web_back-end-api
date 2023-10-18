@@ -2,6 +2,8 @@ package com.example.chatweb.payload;
 
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageOutput {
+public class MessageRequest {
+	
+	@NotEmpty(message =  "text should not empty")
 	private String text;
-	private boolean output;
+	
+	@NotNull
 	private UUID userSendId;
+	
+	@NotNull
 	private UUID userReceivedId;
-	private String time;
 }
