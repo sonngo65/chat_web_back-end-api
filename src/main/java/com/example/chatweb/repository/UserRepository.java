@@ -10,4 +10,5 @@ import com.example.chatweb.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID>{
 	Optional<User> findByNameAndPassword(String name,String password);
+	Optional<User> findByName(String name);
 }

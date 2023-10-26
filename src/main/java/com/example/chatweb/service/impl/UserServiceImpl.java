@@ -4,22 +4,27 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.chatweb.entity.FriendShip;
+import com.example.chatweb.entity.Role;
 import com.example.chatweb.entity.User;
 import com.example.chatweb.exception.ResourceNotFoundException;
 import com.example.chatweb.payload.UserDto;
 import com.example.chatweb.payload.UserRequest;
 import com.example.chatweb.repository.FriendShipRepository;
+import com.example.chatweb.repository.RoleRepository;
 import com.example.chatweb.repository.UserRepository;
 import com.example.chatweb.service.StorageService;
 import com.example.chatweb.service.UserService;
@@ -40,7 +45,10 @@ public class UserServiceImpl implements UserService{
 	private FriendShipRepository friendShipRepository;
 	
 	@Autowired
-	private ObjectMapper objectMapper;
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private RoleRepository roleRepository;
 	
 	@Override
 	public User store(User user) {
@@ -50,8 +58,8 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserDto checkLogin(String username, String password)  {
 		String[] fieldsName = {"username","password"};
-		Object[] fieldsValue = {username,password};
-		User user = userRepository.findByNameAndPassword(username, password).orElseThrow(()-> new ResourceNotFoundException("User",fieldsName,fieldsValue));
+		Object[] fieldsValue = {username,passwordEncoder.encode(password)};
+		User user = userRepository.findByNameAndPassword(username,passwordEncoder.encode(password)).orElseThrow(()-> new ResourceNotFoundException("User",fieldsName,fieldsValue));
 		String lastActive = new SimpleDateFormat("HH:mm").format(user.getLastActive());
 		return new UserDto(user.getUserId(), user.getName(), user.getIcon(),
 				user.getColor(), user.isOnline(), lastActive);
@@ -68,7 +76,7 @@ public class UserServiceImpl implements UserService{
 	}
 	@Override
 	public List<UserDto> listAllUser() {
-		List<User> listUser = userRepository.findAll();
+		List<User> listUser = userRepository.findAll();	
 		return listUser.stream().map((user)-> UserDto.convertToUserResponse(user)).collect(Collectors.toList());
 	}
 	@Override
@@ -87,11 +95,23 @@ public class UserServiceImpl implements UserService{
 	}
 	@Override
 	public UserDto createUser(MultipartFile file, UserRequest userRequest) {
-		User user = new User(userRequest.getName(), userRequest.getPassword(), file.getOriginalFilename(), "#f34ab2", true,
+		User user = new User(userRequest.getName(), passwordEncoder.encode(userRequest.getPassword()), file.getOriginalFilename(), "#f34ab2", true,
 				new Date());
-
+		Role newRole = new Role("USER");
+		Role savedRole = roleRepository.save(newRole);
+		Set<Role> roles  = new HashSet<>();
+		
+		roles.add(savedRole);
+		
+		user.setRoles(roles);
+		
+		User savedUser = userRepository.save(user);
+		
+//		roleRepository.save(savedRole);
+		
 		storageService.store(file);
-		UserDto userResponse = UserDto.convertToUserResponse(userRepository.save(user));
+		
+		UserDto userResponse = UserDto.convertToUserResponse(savedUser);
 		return userResponse;
 	}
 

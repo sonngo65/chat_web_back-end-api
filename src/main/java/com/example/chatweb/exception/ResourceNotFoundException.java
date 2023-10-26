@@ -1,6 +1,5 @@
 package com.example.chatweb.exception;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
